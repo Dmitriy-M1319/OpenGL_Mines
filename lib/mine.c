@@ -57,6 +57,7 @@ void push_flag(game *gameptr, int x, int y)
     cell *c = &gameptr->field[x][y];
     if(c->flag)
     {
+        if(gameptr->flags_count == MINES_COUNT) return;
         c->flag = 0;
         gameptr->flags_count++;
     }
