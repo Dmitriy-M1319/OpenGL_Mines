@@ -1,142 +1,119 @@
 #include <stdlib.h>
 #include <time.h>
-#include <GL/freeglut.h>
+#include <GL/glut.h>
+#include <GL/gl.h>
 #include "lib/mine.h"
-#define MINES_COUNT 20
+
 
 GLint width = 600;
 GLint height = 600;
 
 game *new_game;
-void DrawEmptyCell(int dx, int dy, int dpixels);
-void DrawEmptyOpenedCell(int dx, int dy, int dpixels);
-void DrawOpenedMine(int dx, int dy, int dpixels);
-void DrawFlag(int dx, int dy, int dpixels);
+void DrawEmptyCell();
+void DrawEmptyOpenedCell();
+void DrawOpenedMine();
+void DrawFlag();
 
 
 
 void DrawGameField()
 {
-    int dpixels = width / GAME_FIELD_SIZE;
-    int dx = 0;
-    int dy = 0;
+    glLoadIdentity();
+    glScalef(2.0 / GAME_FIELD_SIZE, 2.0 / GAME_FIELD_SIZE, 0);
+    glTranslatef(-GAME_FIELD_SIZE / 2, -GAME_FIELD_SIZE / 2, 0);
+
     for(int i = 0; i < GAME_FIELD_SIZE; i++)
     {
+        glPushMatrix();
+        glTranslatef(0, i, 0);
         for(int j = 0; j < GAME_FIELD_SIZE; j++)
         {
+            glPushMatrix();
+            glTranslatef(j, 0, 0);
             int element = new_game->field[i][j].state;
-
             switch(element)
             {
                 case EMPTY_CLOSED:
-                    DrawEmptyCell(dx, dy, dpixels);
+                    DrawEmptyCell();
                     break;
                 case EMPTY_OPENED:
-                    DrawEmptyOpenedCell(dx, dy, dpixels);
+                    DrawEmptyOpenedCell();
                     break;
                 case MINE_CLOSED:
-                    DrawEmptyCell(dx, dy, dpixels);
+                    DrawEmptyCell();
                     break;
                 case MINE_OPENED:
-                    DrawOpenedMine(dx, dy, dpixels);
+                    DrawOpenedMine();
                     break;
             }
 
-            if(new_game->field[i][j].flag) DrawFlag(dx, dy, dpixels);
-            
-            dx += dpixels;
-
+            if(new_game->field[i][j].flag)
+                DrawFlag();
+            glPopMatrix();
         }
-        dx = 0;
-        dy += dpixels;
+        glPopMatrix();
     }
 }
-void DrawEmptyCell(int dx, int dy, int dpixels)
+void DrawEmptyCell()
 {
-    glColor3f(0, 1, 0);
-    glBegin(GL_QUADS);
-        glVertex2f(dx, dy);
-        glVertex2f(dx, dy + dpixels);
-        glVertex2f(dx + dpixels, dy + dpixels);
-        glVertex2f(dx + dpixels, dy);
+    glBegin(GL_POLYGON);
+        glColor3f(0, 0.7f, 0); glVertex2f(0.0, 0.0);
+        glColor3f(0, 0.8f, 0); glVertex2f(0.0, 1.0);
+        glColor3f(0, 0.7f, 0); glVertex2f(1.0, 1.0);
+        glColor3f(0, 0.6f, 0); glVertex2f(1.0, 0.0);
     glEnd();
-
-    glColor3f(0, 0.5f, 0);
-    glBegin(GL_LINE_LOOP);
-        glVertex2f(dx, dy);
-        glVertex2f(dx, dy + dpixels);
-        glVertex2f(dx + dpixels, dy + dpixels);
-        glVertex2f(dx + dpixels, dy);
-    glEnd();
-
 }
-void DrawEmptyOpenedCell(int dx, int dy, int dpixels)
+void DrawEmptyOpenedCell()
 {
-    glColor3f(1, 1, 1);
-    glBegin(GL_QUADS);
-        glVertex2f(dx, dy);
-        glVertex2f(dx, dy + dpixels);
-        glVertex2f(dx + dpixels, dy + dpixels);
-        glVertex2f(dx + dpixels, dy);
-    glEnd();
-
-    glColor3f(0, 0, 0);
-    glBegin(GL_LINE_LOOP);
-        glVertex2f(dx, dy);
-        glVertex2f(dx, dy + dpixels);
-        glVertex2f(dx + dpixels, dy + dpixels);
-        glVertex2f(dx + dpixels, dy);
+    glBegin(GL_POLYGON);
+        glColor3f(0.7, 0.7, 0.7); glVertex2f(0, 0);
+        glColor3f(0.8, 0.8, 0.8); glVertex2f(0, 1);
+        glColor3f(0.7, 0.7, 0.7); glVertex2f(1, 1);
+        glColor3f(0.6, 0.6, 0.6); glVertex2f(1, 0);
     glEnd();
 }
 
-void DrawOpenedMine(int dx, int dy, int dpixels)
+void DrawOpenedMine()
 {
-    glColor3f(1, 0, 0);
-    glBegin(GL_QUADS);
-        glVertex2f(dx, dy);
-        glVertex2f(dx, dy + dpixels);
-        glVertex2f(dx + dpixels, dy + dpixels);
-        glVertex2f(dx + dpixels, dy);
+    glBegin(GL_POLYGON);
+        glColor3f(0.7, 0, 0); glVertex2f(0, 0);
+        glColor3f(0.8, 0, 0); glVertex2f(0, 1);
+        glColor3f(0.7, 0, 0); glVertex2f(1, 1);
+        glColor3f(0.6, 0, 0); glVertex2f(1, 0);
     glEnd();
 
-    int d = dpixels / 4;
-    glColor3f(0, 0, 0);
-    glBegin(GL_QUADS);
-        glVertex2f(dx + d, dy + d);
-        glVertex2f(dx + d, dy + 3 * d);
-        glVertex2f(dx + 3 * d, dy + 3 * d);
-        glVertex2f(dx + 3 * d, dy + d);
+    glBegin(GL_POLYGON);
+        glColor3f(0, 0, 0); glVertex2f(0.2, 0.2);
+        glColor3f(0, 0, 0); glVertex2f(0.2, 0.8);
+        glColor3f(0, 0, 0); glVertex2f(0.8, 0.8);
+        glColor3f(0, 0, 0); glVertex2f(0.8, 0.2);
     glEnd();
 }
 
-void DrawFlag(int dx, int dy, int dpixels)
+void DrawFlag()
 {
-    glColor3ub(190, 190, 190);
-    glBegin(GL_QUADS);
-        glVertex2f(dx, dy);
-        glVertex2f(dx, dy + dpixels);
-        glVertex2f(dx + dpixels, dy + dpixels);
-        glVertex2f(dx + dpixels, dy);
+    glBegin(GL_POLYGON);
+        glColor3f(0.7, 0.7, 0.7); glVertex2f(0, 0);
+        glColor3f(0.8, 0.8, 0.8); glVertex2f(0, 1.0);
+        glColor3f(0.7, 0.7, 0.7); glVertex2f(1.0, 1.0);
+        glColor3f(0.6, 0.6, 0.6); glVertex2f(1.0, 0);
     glEnd();
 
-    int d = dpixels / 4;
-    glColor3ub(0, 255, 255);
-    glBegin(GL_TRIANGLE_STRIP);
-        glVertex2f(dx + d, dy + 2 * d);
-        glVertex2f(dx + 3 * d, dy + 3 * d);
-        glVertex2f(dx + 3 * d, dy + 2 * d);
+    glColor3f(0, 1, 1);
+    glBegin(GL_TRIANGLES);
+        glVertex2f(0.2, 0.6);
+        glVertex2f(0.6, 0.8);
+        glVertex2f(0.6, 0.6);
     glEnd();
 
     glColor3f(0, 0, 0);
     glBegin(GL_LINES);
-        glVertex2f(dx + 3 * d, dy + 3 * d);
-        glVertex2f(dx + 3 * d, dy);
+        glVertex2f(0.6, 0.8);
+        glVertex2f(0.6, 0);
     glEnd();
-
 }
 void Display(void)
 {
-    
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
     DrawGameField();
@@ -147,15 +124,15 @@ void Reshape(GLint w, GLint h)
 {
     width = w;
     height = h;
-
     glViewport(0, 0, w, h);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, w, 0, h, -1.0, 1.0);
+    glOrtho(0, w, 0, h, -1.0, -1.0);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
 }
 
 void Mouse(int button, int state, int x, int y)
