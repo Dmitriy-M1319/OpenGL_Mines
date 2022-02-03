@@ -59,3 +59,32 @@ void DrawFlag()
         glVertex2f(0.6, 0);
     glEnd();
 }
+
+void DrawFigure(int value)
+{
+    if(value == 0) return;
+    glColor3f(0, 0, 0);
+    glBegin(GL_LINES);
+        if(value != 2) {
+            glVertex2f(0.8, 0.5); glVertex2f(0.8, 0.2);
+        }
+        if(value != 5 &&  value != 6) {
+            glVertex2f(0.8, 0.8); glVertex2f(0.8, 0.5);
+        }
+        if (value != 1 && value != 4) {
+            glVertex2f(0.2, 0.8); glVertex2f(0.8, 0.8);
+        }
+        if (value != 1 && value != 7) {
+            glVertex2f(0.2, 0.5); glVertex2f(0.8, 0.5);
+        }
+        if (value != 1 && value != 7 && value != 4) {
+            glVertex2f(0.2, 0.2); glVertex2f(0.8, 0.2);
+        }
+        if (value != 1 && value != 2 && value != 3) {
+            glVertex2f(0.2, 0.8); glVertex2f(0.2, 0.5);
+        }
+        if (value == 2 || value == 6 || value == 8 || value == 9) {
+            glVertex2f(0.2, 0.5); glVertex2f(0.2, 0.2);
+        }
+    glEnd();
+}

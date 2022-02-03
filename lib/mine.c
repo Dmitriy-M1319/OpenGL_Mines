@@ -1,19 +1,19 @@
 #include <stdlib.h>
 #include "mine.h"
 
+
 void setNeighbours(game *gameptr, int x, int y)
 {
     for(int dy = -1; dy < 2; dy++)
     {
         for(int dx = -1; dx < 2; dx++)
         {
-            if(dx != 0 && dy != 0)
-            {
-                if(x + dx >= 0 && x + dx < GAME_FIELD_SIZE && y + dy >= 0 && y + dy < GAME_FIELD_SIZE)
+                if((x + dx >= 0) && (x + dx < GAME_FIELD_SIZE) && (y + dy >= 0) && (y + dy < GAME_FIELD_SIZE))
                 {
-                    gameptr->neighbourCounts[x + dx][y + dy]++;
+                    int element = gameptr->neighbourCounts[x + dx][y + dy];
+                    element++;
+                    gameptr->neighbourCounts[x + dx][y + dy]  = element;
                 }
-            }
         }
     }
 }
@@ -32,6 +32,39 @@ void initializeRandomGame(game *gameptr)
         }
         
     }
+#ifdef DEBUG
+#include <stdio.h>
+    for(int i = 0; i < GAME_FIELD_SIZE; i++) 
+    {
+        for(int j = 0; j < GAME_FIELD_SIZE; j++)
+        {
+            if(gameptr->field[j][i].state == MINE_CLOSED) {
+                printf("8 ");
+            } else {
+                printf("%d ", gameptr->neighbourCounts[j][i]);
+            }
+        }
+        printf("\n");
+    }
+#endif
+}
+
+void OpenCell(game *gameptr, int x, int y)
+{
+    if((x < 0) || (x >= GAME_FIELD_SIZE) || (y < 0) || (y >= GAME_FIELD_SIZE)) return;
+    if(gameptr->field[x][y].state == EMPTY_OPENED) return;
+    
+    gameptr->field[x][y].state = EMPTY_OPENED;
+    if(!gameptr->neighbourCounts[x][y])
+    {
+        for(int dy = -1; dy < 2; dy++)
+        {
+            for(int dx = -1; dx < 2; dx++)
+            {
+                OpenCell(gameptr, x + dx, y + dy);
+            }
+        }
+    }
 }
 
 int push_cell(game *gameptr, int x, int y)
@@ -42,7 +75,7 @@ int push_cell(game *gameptr, int x, int y)
     switch(c->state)
     {
         case EMPTY_CLOSED:
-            c->state = EMPTY_OPENED;
+            OpenCell(gameptr, x, y); 
             break;
         case MINE_CLOSED:
             c->state = MINE_OPENED;

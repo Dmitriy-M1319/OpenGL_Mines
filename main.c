@@ -9,6 +9,20 @@
 GLint width = 600;
 GLint height = 600;
 game *new_game;
+
+void CreateNewGame(int isGlutInit)
+{
+    if(new_game != NULL)
+    {
+        free(new_game);
+    }
+    new_game = malloc(sizeof(game));
+    new_game->mines_count = MINES_COUNT;
+    new_game->flags_count = MINES_COUNT;
+    initializeRandomGame(new_game);
+    if(!isGlutInit)
+        glutPostRedisplay();
+}
 void DrawGameField()
 {
     glLoadIdentity();
@@ -31,6 +45,8 @@ void DrawGameField()
                     break;
                 case EMPTY_OPENED:
                     DrawEmptyOpenedCell();
+                    int count = new_game->neighbourCounts[i][j];
+                    DrawFigure(count);
                     break;
                 case MINE_CLOSED:
                     DrawEmptyCell();
@@ -73,6 +89,8 @@ void Reshape(GLint w, GLint h)
 
 void Mouse(int button, int state, int x, int y)
 {
+    if(new_game->is_end_game) return;
+
     int dx, dy;
     int dpixels = width / GAME_FIELD_SIZE;
     int ostx = x % dpixels;
@@ -99,6 +117,7 @@ void Mouse(int button, int state, int x, int y)
         if(res)
         {
             end_game(new_game);
+            new_game->is_end_game = 1;
         }
     }
     if(button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
@@ -108,13 +127,17 @@ void Mouse(int button, int state, int x, int y)
     glutPostRedisplay();
 }
 
+void Keyboard(unsigned char key, int x, int y)
+{
+    if(key == 115)
+        //CreateNewGame(0);
+}
+
+
 int main(int argc,char *argv[])
 {
     srand(time(NULL));
-    new_game = (game *)malloc(sizeof(game));
-    new_game->mines_count = MINES_COUNT;
-    new_game->flags_count = MINES_COUNT;
-    initializeRandomGame(new_game);
+    CreateNewGame(1); 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB);
     glutInitWindowSize(width, height);
@@ -123,6 +146,7 @@ int main(int argc,char *argv[])
     glutDisplayFunc(Display);
     glutReshapeFunc(Reshape);
     glutMouseFunc(Mouse);
+    glutKeyboardFunc(Keyboard);
 
     glutMainLoop();
     free(new_game);

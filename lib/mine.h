@@ -2,7 +2,7 @@
 #define MINE_H
 
 #define GAME_FIELD_SIZE 10
-#define MINES_COUNT 20
+#define MINES_COUNT 10
 enum cell_state {
     EMPTY_CLOSED = 0,
     EMPTY_OPENED = 1,
@@ -24,6 +24,7 @@ typedef struct {
     int neighbourCounts[GAME_FIELD_SIZE][GAME_FIELD_SIZE];
     int mines_count;
     int flags_count;
+    int is_end_game;
 } game;
 
 void setNeigbours(game *gameptr, int x, int y);
