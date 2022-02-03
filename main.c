@@ -1,6 +1,12 @@
 #include <stdlib.h>
 #include <time.h>
+
+#ifdef WIN32_APP
+#include <freeglut.h>
+#else
 #include <GL/glut.h>
+#endif
+
 #include <GL/gl.h>
 #include "lib/mine.h"
 #include "lib/drawning.h"
@@ -129,8 +135,8 @@ void Mouse(int button, int state, int x, int y)
 
 void Keyboard(unsigned char key, int x, int y)
 {
-    if(key == 115)
-        //CreateNewGame(0);
+    /*if(key == 115)
+        CreateNewGame(0);*/
 }
 
 
