@@ -5,5 +5,6 @@ void DrawEmptyCell();
 void DrawEmptyOpenedCell();
 void DrawOpenedMine();
 void DrawFlag();
+void DrawFigure(int value);
 
 #endif

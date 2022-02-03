@@ -2,7 +2,7 @@
 #define MINE_H
 
 #define GAME_FIELD_SIZE 10
-#define MINES_COUNT 20
+#define MINES_COUNT 10
 enum cell_state {
     EMPTY_CLOSED = 0,
     EMPTY_OPENED = 1,

@@ -31,6 +31,8 @@ void DrawGameField()
                     break;
                 case EMPTY_OPENED:
                     DrawEmptyOpenedCell();
+                    int count = new_game->neighbourCounts[i][j];
+                    DrawFigure(count);
                     break;
                 case MINE_CLOSED:
                     DrawEmptyCell();
