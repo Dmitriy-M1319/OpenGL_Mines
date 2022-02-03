@@ -24,6 +24,7 @@ typedef struct {
     int neighbourCounts[GAME_FIELD_SIZE][GAME_FIELD_SIZE];
     int mines_count;
     int flags_count;
+    int is_end_game;
 } game;
 
 void setNeigbours(game *gameptr, int x, int y);
